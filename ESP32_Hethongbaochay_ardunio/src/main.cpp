@@ -42,6 +42,10 @@ void setup() {
   pinMode(BUZZER_PIN, OUTPUT);    // Khởi tạo chân còi
   dht.begin();
   Blynk.begin(BLYNK_AUTH_TOKEN, WIFI_SSID, WIFI_PASSWORD);    // Kết nối với Blynk
+  lcd.setCursor(0, 0);
+  lcd.print("Nhiet do: ");
+  lcd.setCursor(0, 1);
+  lcd.print("Do am: ");
 }
 
 void loop() {
@@ -74,6 +78,8 @@ void setup_wifi() {
     lcd.print("Connected");
     Serial.println("");
     Serial.println("WiFi connected");
+    delay(5000);
+    lcd.clear();
 }
 
 void setup_LCD(){
@@ -83,10 +89,9 @@ void setup_LCD(){
 
 void getData_MQ135() {
     float gas = mq135.getPPM();
+    Blynk.virtualWrite(V2, gas); // Gửi dữ liệu MQ135 lên biểu đồ trong Blynk
     Serial.print("Air Quality (PPM): "); // In ra màn hình Serial Monitor
     Serial.println(gas); // In giá trị PPM
-    Blynk.virtualWrite(V2, gas); // Gửi dữ liệu MQ135 lên biểu đồ trong Blynk
-
 }
 
 void getData_DHT11(){
@@ -100,6 +105,13 @@ void getData_DHT11(){
     Serial.println("Failed to read from DHT sensor!\n");
     return;
   }
+
+  lcd.setCursor(9, 0);
+  lcd.print(t);
+  lcd.print(" C");
+  lcd.setCursor(8, 1);
+  lcd.print(h);
+  lcd.print(" %");
 
   Blynk.virtualWrite(V0, t); //Nhiêt độ
   Blynk.virtualWrite(V1, h); //Độ ẩm
